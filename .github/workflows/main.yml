@@ -31,5 +31,5 @@ jobs:
         env:
           CLUSTER: prod-gcp
           RESOURCE: nais.yaml
-          WORKLOAD_IMAGE: ${{ steps.docker-build-push.outputs.image }}
+          VAR: image=${{ steps.docker-build-push.outputs.image }}
           TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}
