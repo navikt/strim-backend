@@ -5,7 +5,7 @@ FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
 # Copy the jar file into the container
-COPY build/libs/*.jar app.jar
+COPY target/strim-backend-1.0.0.jar app.jar
 
 # Set the command to run the app
 ENTRYPOINT ["java", "-jar", "app.jar"]
