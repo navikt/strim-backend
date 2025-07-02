@@ -2,22 +2,21 @@ package org.example.database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import org.jetbrains.exposed.sql.Database
+import javax.sql.DataSource
 
 object DatabaseFactory {
-    fun init() {
+    fun init(): DataSource {
+        return hikari()
+    }
+
+    private fun hikari(): HikariDataSource {
         val config = HikariConfig().apply {
             jdbcUrl = "jdbc:postgresql://35.228.170.11:5432/strim"
-            driverClassName = "org.postgresql.Driver"
             username = "strim-backend"
-            password = "I8BQJq)sKvo_PyeK"
-            maximumPoolSize = 10
-            isAutoCommit = false
-            transactionIsolation = "TRANSACTION_REPEATABLE_READ"
+            password = "YOUR_ACTUAL_PASSWORD"
+            driverClassName = "org.postgresql.Driver"
         }
 
-
-        val dataSource = HikariDataSource(config)
-        Database.connect(dataSource)
+        return HikariDataSource(config)
     }
 }
