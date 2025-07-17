@@ -1,2 +1,8 @@
 target/**
 .idea/**
+src/main/resources/ssl/
+*.pem
+*.key
+*.crt
+*.jks
+*.p12
