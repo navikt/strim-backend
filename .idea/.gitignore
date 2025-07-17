@@ -8,3 +8,10 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+# SSL files
+src/main/resources/ssl/
+*.pem
+*.key
+*.crt
+*.jks
+*.p12
