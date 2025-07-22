@@ -1,10 +1,23 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://155.55.51.185:5432/strim
+    username: strim-backend
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 management:
   health:
     diskspace:
       enabled: false
   endpoint:
     health:
-      show-details : always
+      show-details: always
   endpoints:
     web:
       exposure:
