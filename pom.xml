@@ -56,15 +56,28 @@
             <artifactId>postgresql</artifactId>
             <version>42.7.3</version>
         </dependency>
+
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
         </dependency>
 
         <dependency>
+            <groupId>com.google.cloud.sql</groupId>
+            <artifactId>postgres-socket-factory</artifactId>
+            <version>1.11.1</version>
+        </dependency>
+
+        <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
             <version>3.1.0</version>
+        </dependency>
+
+        <!-- ✅ Added Spring Security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
         <dependency>
@@ -97,11 +110,6 @@
                     <languageVersion>2.1</languageVersion>
                 </configuration>
                 <dependencies>
-                    <dependency>
-                        <groupId>com.google.cloud.sql</groupId>
-                        <artifactId>postgres-socket-factory</artifactId>
-                        <version>1.11.1</version>
-                    </dependency>
                     <dependency>
                         <groupId>org.jetbrains.kotlin</groupId>
                         <artifactId>kotlin-maven-allopen</artifactId>

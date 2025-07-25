@@ -2,6 +2,8 @@ package strim
 
 import Event
 import org.springframework.data.jpa.repository.JpaRepository
-import java.util.*
+import org.springframework.stereotype.Repository
 
-interface EventRepository : JpaRepository<Event, UUID>
+@Repository
+interface EventRepository : JpaRepository<Event, Long>
+
