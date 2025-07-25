@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/strim
+    url: jdbc:postgresql:///strim?cloudSqlInstance=delta-prod:europe-north1:strim-backend&socketFactory=com.google.cloud.sql.postgres.SocketFactory&sslmode=disable
     username: strim
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
