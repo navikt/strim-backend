@@ -1,7 +1,7 @@
 spring:
   datasource:
-    url: jdbc:postgresql:///strim?cloudSqlInstance=delta-prod:europe-north1:strim-backend&socketFactory=com.google.cloud.sql.postgres.SocketFactory&sslmode=disable
-    username: strim
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_DATABASE}
+    username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
@@ -10,6 +10,7 @@ spring:
     properties:
       hibernate:
         default_schema: public
+
 management:
   health:
     diskspace:
