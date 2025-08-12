@@ -26,14 +26,14 @@ spec:
     autoInstrumentation:
       enabled: true
       runtime: java
-#  liveness:
-#    path: /internal/actuator/health
-#    initialDelay: 30
-#    periodSeconds: 10
-#    timeout: 5
-#    failureThreshold: 12
-#  readiness:
-#    path: /internal/actuator/health
-#    initialDelay: 30
-#    periodSeconds: 10
-#    timeout: 5
+  liveness:
+    path: /internal/actuator/health
+    initialDelay: 30
+    periodSeconds: 10
+    timeout: 5
+    failureThreshold: 12
+  readiness:
+    path: /internal/actuator/health
+    initialDelay: 30
+    periodSeconds: 10
+    timeout: 5
