@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${NAIS_DATABASE_STRIM_JDBC_URL}
-    username: ${NAIS_DATABASE_STRIM_USERNAME}
-    password: ${NAIS_DATABASE_STRIM_PASSWORD}
+    url: ${NAIS_DATABASE_STRIM_JDBC_URL:jdbc:postgresql://${DB_HOST:${HOST:localhost}}:${DB_PORT:5432}/${DB_DATABASE:strim}}
+    username: ${NAIS_DATABASE_STRIM_USERNAME:${DB_USERNAME}}
+    password: ${NAIS_DATABASE_STRIM_PASSWORD:${DB_PASSWORD}}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -10,7 +10,6 @@ spring:
     properties:
       hibernate:
         default_schema: public
-
 management:
   health:
     diskspace:
