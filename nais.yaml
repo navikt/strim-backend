@@ -6,11 +6,12 @@ metadata:
   labels:
     team: delta
 spec:
+  image: {{image}}
   accessPolicy:
     inbound:
       rules:
         - application: strim-frontend
-  image: {{image}}
+  port: 8080
   gcp:
     sqlInstances:
       - type: POSTGRES_17
@@ -26,11 +27,13 @@ spec:
       enabled: true
       runtime: java
   liveness:
+    path: /internal/actuator/health
     initialDelay: 30
     periodSeconds: 10
     timeout: 5
     failureThreshold: 12
   readiness:
+    path: /internal/actuator/health
     initialDelay: 30
     periodSeconds: 10
     timeout: 5
