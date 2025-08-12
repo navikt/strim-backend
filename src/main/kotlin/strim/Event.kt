@@ -8,22 +8,32 @@ import java.util.UUID
 @Table(name = "events", schema = "public")
 data class Event(
     @Id
+    @Column(columnDefinition = "uuid")
     val id: UUID,
 
+    @Column(nullable = false)
     val title: String,
+
+    @Column(columnDefinition = "text")
     val description: String,
 
+    @Column(name = "image_url")
+    val imageUrl: String?,
+
+    @Column(name = "start_time")
     val startTime: LocalDateTime,
+
+    @Column(name = "end_time")
     val endTime: LocalDateTime,
 
-//    val location: String,
+    val location: String,
 
     @Column(name = "public")
-    val public: Boolean,
+    val isPublic: Boolean,
 
+    @Column(name = "participant_limit")
     val participantLimit: Int,
-    val signupDeadline: LocalDateTime?,
 
-    @Column(name = "created_at")
-    val createdAt: LocalDateTime?,
+    @Column(name = "signup_deadline")
+    val signupDeadline: LocalDateTime?
 )
