@@ -1,8 +1,15 @@
+db:
+  jdbc:
+    url: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_JDBC_URL:${DB_JDBC_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_DATABASE:strim}}}
+  username: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_USERNAME:${DB_USERNAME:strim}}
+  password: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_PASSWORD:${DB_PASSWORD:changeme}}
+  poolsize: ${DB_POOLSIZE:5}
 spring:
   datasource:
     url: ${db.jdbc.url}
     username: ${db.username}
     password: ${db.password}
+    driver-class-name: org.postgresql.Driver
     hikari:
       connection-timeout: 5000
       max-lifetime: 1200000
