@@ -28,7 +28,7 @@ data class Event(
 
     val location: String,
 
-    @Column(name = "public")
+    @Column(name = "\"public\"")
     val isPublic: Boolean,
 
     @Column(name = "participant_limit")
@@ -37,3 +37,4 @@ data class Event(
     @Column(name = "signup_deadline")
     val signupDeadline: LocalDateTime?
 )
+

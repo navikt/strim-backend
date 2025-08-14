@@ -1,6 +1,6 @@
+package strim
+
 import org.springframework.web.bind.annotation.*
-import strim.Event
-import strim.EventRepository
 
 @RestController
 @RequestMapping("/events")
