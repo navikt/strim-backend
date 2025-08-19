@@ -5,30 +5,31 @@ spring:
     password: ${PGPASSWORD:${NAIS_DATABASE_STRIM_BACKEND_STRIM_PASSWORD:${db.password}}}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_POOL_SIZE:${DB_POOLSIZE:5}}
       connection-timeout: 5000
       max-lifetime: 1200000
       idle-timeout: 600000
       connection-test-query: SELECT 1
-
+      maximum-pool-size: ${DB_POOLSIZE:5}
   jpa:
     hibernate:
       ddl-auto: update
-    open-in-view: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
       hibernate:
         default_schema: public
         jdbc.time_zone: UTC
+        format_sql: false
+        jdbc.batch_size: 25
 
 management:
+  health:
+    diskspace:
+      enabled: false
   endpoint:
     health:
       show-details: always
   endpoints:
     web:
-      base-path: /internal/actuator
       exposure:
         include: info, health, metrics, prometheus
-  health:
-    diskspace:
-      enabled: false
+      base-path: /internal/actuator
