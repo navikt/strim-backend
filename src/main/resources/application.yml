@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_BACKEND_URL}
-    username: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_BACKEND_USERNAME}
-    password: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_BACKEND_PASSWORD}
+    url: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_BACKEND_URL:${DB_JDBC_URL:}}
+    username: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_BACKEND_USERNAME:${DB_USERNAME:}}
+    password: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_BACKEND_PASSWORD:${DB_PASSWORD:}}
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-timeout: 5000
@@ -20,16 +20,14 @@ spring:
         jdbc.time_zone: UTC
         format_sql: false
         jdbc.batch_size: 25
-
 management:
-  health:
-    diskspace:
-      enabled: false
   endpoint:
     health:
-      show-details: always
+      probes:
+        enabled: true
+      show-details: never
   endpoints:
     web:
-      exposure:
-        include: info, health, metrics, prometheus
       base-path: /internal/actuator
+      exposure:
+        include: health,info,metrics,prometheus
