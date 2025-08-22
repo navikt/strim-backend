@@ -29,13 +29,12 @@ spec:
       runtime: java
   liveness:
     path: /internal/actuator/health
-    initialDelay: 45
-    periodSeconds: 10
+    initialDelay: 10
     timeout: 5
-    failureThreshold: 12
-
+    periodSeconds: 5
+    failureThreshold: 30
   readiness:
     path: /internal/actuator/health
-    initialDelay: 45
-    periodSeconds: 10
+    initialDelay: 10
+    periodSeconds: 5
     timeout: 5

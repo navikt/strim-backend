@@ -21,13 +21,15 @@ spring:
         format_sql: false
         jdbc.batch_size: 25
 management:
+  health:
+    diskspace:
+      enabled: false
   endpoint:
     health:
-      probes:
-        enabled: true
-      show-details: never
+      show-details : always
   endpoints:
     web:
-      base-path: /internal/actuator
       exposure:
-        include: health,info,metrics,prometheus
+        include: info, health, metrics, prometheus
+      base-path: /internal/actuator
+
