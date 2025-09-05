@@ -1,8 +1,6 @@
 spring:
   datasource:
-    url: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_BACKEND_URL:${DB_JDBC_URL:}}
-    username: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_BACKEND_USERNAME:${DB_USERNAME:}}
-    password: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_BACKEND_PASSWORD:${DB_PASSWORD:}}
+    url: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_JDBC_URL:${DB_JDBC_URL:}}
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-timeout: 5000
@@ -12,7 +10,7 @@ spring:
       maximum-pool-size: ${DB_POOLSIZE:5}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
       hibernate:
@@ -26,10 +24,24 @@ management:
       enabled: false
   endpoint:
     health:
-      show-details : always
+      show-details: always
   endpoints:
     web:
       exposure:
         include: info, health, metrics, prometheus
       base-path: /internal/actuator
 
+#---
+## Local overrides: run with -Dspring.profiles.active=local
+#spring:
+#  config:
+#    activate:
+#      on-profile: local
+#  datasource:
+#    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_DATABASE:strim}
+#    username: ${DB_USERNAME:strim}
+#    password: ${DB_PASSWORD:changeme}
+#    driver-class-name: org.postgresql.Driver
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
