@@ -13,7 +13,8 @@ class SecurityConfig {
         http.csrf { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers("/internal/actuator/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/events").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/events/**").permitAll()
+                    .requestMatchers("/internal/actuator/**").permitAll()
                     .anyRequest().denyAll()
             }
         return http.build()

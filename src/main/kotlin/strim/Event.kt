@@ -1,12 +1,16 @@
 package strim
 
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 import java.time.LocalDateTime
 import java.util.UUID
 
 @Entity
 @Table(name = "events", schema = "public")
 data class Event(
+
     @Id
     @Column(columnDefinition = "uuid")
     val id: UUID,
@@ -17,24 +21,26 @@ data class Event(
     @Column(columnDefinition = "text")
     val description: String,
 
-    @Column(name = "image_url")
+    // maps DB column video_url -> property imageUrl
+    @Column(name = "video_url")
     val imageUrl: String?,
 
-    @Column(name = "start_time")
+    @Column(name = "start_time", nullable = false)
     val startTime: LocalDateTime,
 
-    @Column(name = "end_time")
+    @Column(name = "end_time", nullable = false)
     val endTime: LocalDateTime,
 
+    @Column(nullable = false)
     val location: String,
 
-    @Column(name = "\"public\"")
+    // "public" is a reserved word in many contexts; quote to be explicit
+    @Column(name = "\"public\"", nullable = false)
     val isPublic: Boolean,
 
-    @Column(name = "participant_limit")
+    @Column(name = "participant_limit", nullable = false)
     val participantLimit: Int,
 
     @Column(name = "signup_deadline")
     val signupDeadline: LocalDateTime?
 )
-

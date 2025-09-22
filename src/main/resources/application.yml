@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_JDBC_URL:${DB_JDBC_URL:}}
+    url: ${NAIS_DATABASE_DB_JDBC_URL:${DB_JDBC_URL:}}
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-timeout: 5000
@@ -8,6 +8,7 @@ spring:
       idle-timeout: 600000
       connection-test-query: SELECT 1
       maximum-pool-size: ${DB_POOLSIZE:5}
+
   jpa:
     hibernate:
       ddl-auto: validate
@@ -18,19 +19,13 @@ spring:
         jdbc.time_zone: UTC
         format_sql: false
         jdbc.batch_size: 25
+
 management:
-  health:
-    diskspace:
-      enabled: false
-  endpoint:
-    health:
-      show-details: always
+  endpoint.health.show-details: always
   endpoints:
     web:
-      exposure:
-        include: info, health, metrics, prometheus
       base-path: /internal/actuator
-
+      exposure.include: info,health,metrics,prometheus
 #---
 ## Local overrides: run with -Dspring.profiles.active=local
 #spring:

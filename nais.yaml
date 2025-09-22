@@ -28,13 +28,14 @@ spec:
       enabled: true
       runtime: java
   liveness:
-    path: /internal/is_alive
-    initialDelay: 10
+    path: /internal/actuator/health
+    initialDelay: 30
+    periodSeconds: 10
     timeout: 5
-    periodSeconds: 5
-    failureThreshold: 30
+    failureThreshold: 12
+
   readiness:
-    path: /internal/is_ready
-    initialDelay: 10
-    periodSeconds: 5
+    path: /internal/actuator/health
+    initialDelay: 30
+    periodSeconds: 10
     timeout: 5
