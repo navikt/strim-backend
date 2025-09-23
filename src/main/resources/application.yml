@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: ${DB_JDBC_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: ${NAIS_DATABASE_DB_JDBC_URL}
+    username: ${NAIS_DATABASE_DB_USERNAME}
+    password: ${NAIS_DATABASE_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-timeout: 5000
