@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: ${NAIS_DATABASE_DB_JDBC_URL:${DB_JDBC_URL:}}
+    url: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_BACKEND_JDBC_URL}
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-timeout: 5000
@@ -26,17 +26,3 @@ management:
     web:
       base-path: /internal/actuator
       exposure.include: info,health,metrics,prometheus
-#---
-## Local overrides: run with -Dspring.profiles.active=local
-#spring:
-#  config:
-#    activate:
-#      on-profile: local
-#  datasource:
-#    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_DATABASE:strim}
-#    username: ${DB_USERNAME:strim}
-#    password: ${DB_PASSWORD:changeme}
-#    driver-class-name: org.postgresql.Driver
-#  jpa:
-#    hibernate:
-#      ddl-auto: update
