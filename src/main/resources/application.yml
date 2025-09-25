@@ -20,3 +20,7 @@ management:
     web:
       base-path: /internal/actuator
       exposure.include: info,health,metrics,prometheus
+
+logging:
+  level:
+    org.springframework.boot.context.config: DEBUG
