@@ -1,6 +1,8 @@
 spring:
   datasource:
-    url: ${DB_JDBC_URL}
+    url: ${DB_JDBC_URL:?DB_JDBC_URL is not set!}
+    username: ${DB_USERNAME:?DB_USERNAME is not set!}
+    password: ${DB_PASSWORD:?DB_PASSWORD is not set!}
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-timeout: 5000
