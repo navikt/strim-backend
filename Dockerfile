@@ -1,5 +1,5 @@
 # Use a lightweight Java 17 runtime base image
-FROM urope-north1-docker.pkg.dev/cgr-nav/pull-through/nav.no/jre:openjdk-17
+FROM europe-north1-docker.pkg.dev/cgr-nav/pull-through/nav.no/jre:openjdk-17
 
 # Set working directory
 WORKDIR /app
