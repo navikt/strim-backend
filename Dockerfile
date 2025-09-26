@@ -1,5 +1,5 @@
 # Use a lightweight Java 17 runtime base image
-FROM eclipse-temurin:17-jdk
+FROM urope-north1-docker.pkg.dev/cgr-nav/pull-through/nav.no/jre:openjdk-17
 
 # Set working directory
 WORKDIR /app

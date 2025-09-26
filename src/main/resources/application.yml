@@ -8,6 +8,11 @@ spring:
       idle-timeout: 600000
       connection-test-query: SELECT 1
       maximum-pool-size: ${DB_POOLSIZE:5}
+      data-source-properties:
+        sslmode: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_SSLMODE:require}
+        sslcert: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_SSLCERT}
+        sslkey: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_SSLKEY}
+        sslrootcert: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_SSLROOTCERT}
 
   jpa:
     hibernate:
