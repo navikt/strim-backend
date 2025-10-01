@@ -68,12 +68,9 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <!-- you can omit the version to use Spring Boot’s managed one -->
             <version>42.7.3</version>
         </dependency>
 
-        <!-- The two below are optional (brought transitively by starters);
-             safe to keep or remove. -->
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
