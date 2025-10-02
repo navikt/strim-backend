@@ -1,11 +1,8 @@
-# Use a lightweight Java 17 runtime base image
-FROM europe-north1-docker.pkg.dev/cgr-nav/pull-through/nav.no/jre:openjdk-17
-
-# Set working directory
+FROM gcr.io/distroless/java21-debian12
+ENV LANG='nb_NO.UTF-8' LANGUAGE='nb_NO:nb' LC_ALL='nb:NO.UTF-8' TZ="Europe/Oslo"
+# Merk at JDK_JAVA_OPTIONS blir satt via naiserator-*.yml, og derfor ikke bør settes her.
+# Dette gjøres for at JAVA_PROXY_OPTIONS-verdien som Nais setter ved oppstart i Kubernetes skal kunne tas med; den vil ikke være satt/ha
+# riktig verdi under bygging av Docker-imaget.
 WORKDIR /app
-
-# Copy the jar file into the container
-COPY target/strim-backend-1.0.0.jar app.jar
-
-# Set the command to run the app
-ENTRYPOINT ["java", "-jar", "app.jar"]
+COPY build/libs/app*.jar app.jar
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75", "-jar", "app.jar"]
