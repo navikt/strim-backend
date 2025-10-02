@@ -6,6 +6,8 @@ metadata:
   labels:
     team: delta
 spec:
+  ingresses:
+    - https://strim-backend.intern.nav.no.prod.nais.io
   image: {{image}}
   accessPolicy:
     inbound:
