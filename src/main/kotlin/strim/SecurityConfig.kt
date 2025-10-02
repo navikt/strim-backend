@@ -14,7 +14,7 @@ class SecurityConfig {
             .authorizeHttpRequests {
                 it.requestMatchers("/internal/actuator/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/events/**").permitAll()
-                    .requestMatchers("/internal/actuator/**").permitAll()
+                    .requestMatchers("/internal/**").permitAll()
                     .anyRequest().denyAll()
             }
         return http.build()
