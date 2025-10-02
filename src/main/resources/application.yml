@@ -1,23 +1,24 @@
 spring:
-  datasource:
-    url: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_JDBC_URL}
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      connection-timeout: 5000
-      max-lifetime: 1200000
-      idle-timeout: 600000
-      connection-test-query: SELECT 1
-      maximum-pool-size: ${DB_POOLSIZE:5}
-      data-source-properties:
-        sslmode: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_SSLMODE:require}
-        sslcert: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_SSLCERT}
-        sslkey: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_SSLKEY}
-        sslrootcert: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_SSLROOTCERT}
-
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+# uncomment after db has been provisioned
+#  datasource:
+#    url: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_JDBC_URL}
+#    driver-class-name: org.postgresql.Driver
+#    hikari:
+#      connection-timeout: 5000
+#      max-lifetime: 1200000
+#      idle-timeout: 600000
+#      connection-test-query: SELECT 1
+#      maximum-pool-size: ${DB_POOLSIZE:5}
+#      data-source-properties:
+#        sslmode: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_SSLMODE:require}
+#        sslcert: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_SSLCERT}
+#        sslkey: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_SSLKEY}
+#        sslrootcert: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_SSLROOTCERT}
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: validate
+#    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 management:
   endpoint.health.show-details: always
