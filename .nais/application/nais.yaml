@@ -12,8 +12,8 @@ spec:
       rules:
         - application: strim-frontend
   port: 8080
-  envFrom:
-  - secret: google-sql-strim-backend
+#  envFrom:
+#  - secret: google-sql-strim-backend
   gcp:
     sqlInstances:
       - type: POSTGRES_17
