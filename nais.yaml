@@ -39,7 +39,7 @@ spec:
     periodSeconds: 5
     failureThreshold: 30
   readiness:
-    path: /internal/is_ready
+    path: /internal/actuator/is_ready
     initialDelay: 10
     periodSeconds: 5
     timeout: 5
