@@ -1,7 +1,8 @@
 spring:
 # uncomment after db has been provisioned
   datasource:
-    url: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_JDBC_URL}
+#    NAIS_DATABASE_MYAPP_MYDB_URL
+    url: ${NAIS_DATABASE_STRIM-BACKEND_STRIM_JDBC_URL}
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-timeout: 5000
