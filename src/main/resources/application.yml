@@ -21,12 +21,11 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 management:
-  endpoint.health.show-details: always
-  endpoints:
-    web:
-      base-path: /internal/actuator
-      exposure.include: info,health,metrics,prometheus
-
+  endpoint:
+    health:
+      group:
+        liveness:
+          include: livenessState,dataSource
 logging:
   level:
     org.springframework.boot.context.config: DEBUG
