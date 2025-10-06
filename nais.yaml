@@ -33,13 +33,13 @@ spec:
       enabled: true
       runtime: java
   liveness:
-    path: /internal/actuator/health
+    path: /internal/is_alive
     initialDelay: 10
     timeout: 5
     periodSeconds: 5
     failureThreshold: 30
   readiness:
-    path: /internal/actuator/is_ready
+    path: /internal/is_ready
     initialDelay: 10
     periodSeconds: 5
     timeout: 5
