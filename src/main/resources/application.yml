@@ -1,7 +1,6 @@
 spring:
-# uncomment after db has been provisioned
   datasource:
-    url: ${NAIS_DATABASE_STRIM-BACKEND_STRIM_JDBC_URL}
+    url: ${DB_JDBC_URL}
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-timeout: 5000
@@ -10,10 +9,10 @@ spring:
       connection-test-query: SELECT 1
       maximum-pool-size: ${DB_POOLSIZE:5}
       data-source-properties:
-        sslmode: ${NAIS_DATABASE_STRIM-BACKEND_STRIM_SSLMODE:require}
-        sslcert: ${NAIS_DATABASE_STRIM-BACKEND_STRIM_SSLCERT}
-        sslkey: ${NAIS_DATABASE_STRIM-BACKEND_STRIM_SSLKEY}
-        sslrootcert: ${NAIS_DATABASE_STRIM-BACKEND_STRIM_SSLROOTCERT}
+        sslmode: ${DB_SSLMODE:require}
+        sslcert: ${DB_SSLCERT}
+        sslkey: ${DB_SSLKEY}
+        sslrootcert: ${DB_SSLROOTCERT}
 
   jpa:
     hibernate:
