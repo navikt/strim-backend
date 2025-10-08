@@ -5,7 +5,6 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import java.time.LocalDateTime
-import java.util.UUID
 
 @Entity
 @Table(name = "events", schema = "public")
@@ -13,7 +12,7 @@ data class Event(
 
     @Id
     @Column(columnDefinition = "uuid")
-    val id: UUID,
+    val id: String,
 
     @Column(nullable = false)
     val title: String,

@@ -1,4 +1,7 @@
 spring:
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
   datasource:
     url: ${NAIS_DATABASE_STRIM_BACKEND_STRIM_JDBC_URL}
     driver-class-name: org.postgresql.Driver
