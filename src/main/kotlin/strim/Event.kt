@@ -35,7 +35,7 @@ data class Event(
     val location: String,
 
     // "public" is a reserved word in many contexts; quote to be explicit
-    @Column(name = "\"public\"", nullable = false)
+    @Column(name = "is_public", nullable = false)
     val isPublic: Boolean,
 
     @Column(name = "participant_limit", nullable = false)
