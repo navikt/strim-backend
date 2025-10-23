@@ -7,7 +7,7 @@ metadata:
     team: delta
 spec:
   ingresses:
-    - https://strim-backend.nav.no
+    - https://strim-backend.intern.nav.no
   image: {{image}}
   accessPolicy:
     inbound:
