@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/events")
@@ -12,6 +13,19 @@ class EventController(private val eventRepository: EventRepository) {
 
     @GetMapping
     fun getAllEvents(): List<Event> = eventRepository.findAll()
+
+    @GetMapping("/upcoming")
+    fun getUpcomingEvents(): List<Event> {
+        val now = LocalDateTime.now()
+        return eventRepository.findByEndTimeAfterOrderByStartTimeAsc(now)
+    }
+
+    @GetMapping("/past")
+    fun getPastEvents(): List<Event> {
+        val now = LocalDateTime.now()
+        return eventRepository.findByEndTimeBeforeOrderByStartTimeDesc(now)
+    }
+
 
     @PostMapping("/create")
     fun saveEvent(@RequestBody nyEvent: EventDTO): Event {
