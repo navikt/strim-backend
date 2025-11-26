@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 data class EventDTO(
     val title: String,
     val description: String,
-    val imageUrl: String?,
+    val videoUrl: String?,
     val startTime: LocalDateTime,
     val endTime: LocalDateTime,
     val location: String,

@@ -32,7 +32,7 @@ class EventController(private val eventRepository: EventRepository) {
         val event = Event(
             title = nyEvent.title,
             description = nyEvent.description,
-            imageUrl = nyEvent.imageUrl,
+            videoUrl = nyEvent.videoUrl,
             startTime = nyEvent.startTime,
             endTime = nyEvent.endTime,
             location = nyEvent.location,

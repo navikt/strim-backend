@@ -21,7 +21,7 @@ data class Event(
     var description: String,
 
     @Column(name = "video_url")
-    var imageUrl: String? = null,
+    var videoUrl: String? = null,
 
     @Column(name = "start_time", nullable = false)
     var startTime: LocalDateTime,
