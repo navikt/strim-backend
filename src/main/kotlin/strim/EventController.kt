@@ -1,10 +1,7 @@
 package strim
 
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import jakarta.validation.Valid
+import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
 
 @RestController
@@ -26,9 +23,8 @@ class EventController(private val eventRepository: EventRepository) {
         return eventRepository.findByEndTimeBeforeOrderByStartTimeDesc(now)
     }
 
-
     @PostMapping("/create")
-    fun saveEvent(@RequestBody nyEvent: EventDTO): Event {
+    fun saveEvent(@Valid @RequestBody nyEvent: EventDTO): Event {
         val event = Event(
             title = nyEvent.title,
             description = nyEvent.description,
