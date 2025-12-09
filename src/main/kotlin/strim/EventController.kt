@@ -1,7 +1,10 @@
 package strim
 
-import jakarta.validation.Valid
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDateTime
 
 @RestController
@@ -24,7 +27,9 @@ class EventController(private val eventRepository: EventRepository) {
     }
 
     @PostMapping("/create")
-    fun saveEvent(@Valid @RequestBody nyEvent: EventDTO): Event {
+    fun saveEvent(@RequestBody nyEvent: EventDTO): Event {
+        EventValidator.validate(nyEvent, LocalDateTime.now())
+
         val event = Event(
             title = nyEvent.title,
             description = nyEvent.description,
