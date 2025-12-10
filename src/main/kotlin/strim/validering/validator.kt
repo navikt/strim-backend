@@ -1,5 +1,6 @@
-package strim
+package strim.validering
 
+import strim.EventDTO
 import java.time.LocalDateTime
 
 object EventValidator {
