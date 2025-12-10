@@ -22,21 +22,24 @@ class EventController(private val eventRepository: EventRepository) {
     @GetMapping("/upcoming")
     fun getUpcomingEvents(): List<Event> {
         val now = LocalDateTime.now()
-        logger.info("fikk forespørsel om å hente kommende events")
-        return eventRepository.findByEndTimeAfterOrderByStartTimeAsc(now)
+        val upcomingEvents = eventRepository.findByEndTimeAfterOrderByStartTimeAsc(now)
+        logger.info("Fetched {} upcoming events", upcomingEvents.size)
+        logger.debug("Upcoming events: {}", upcomingEvents)
+        return upcomingEvents
     }
 
     @GetMapping("/past")
     fun getPastEvents(): List<Event> {
         val now = LocalDateTime.now()
-        logger.info("fikk forespørsel om å hente tidligere events")
-        return eventRepository.findByEndTimeBeforeOrderByStartTimeDesc(now)
+        val pastEvents = eventRepository.findByEndTimeBeforeOrderByStartTimeDesc(now)
+        logger.info("Fetched {} past events", pastEvents.size)
+        logger.debug("Past events: {}", pastEvents)
+        return pastEvents
     }
 
     @PostMapping("/create")
     fun saveEvent(@RequestBody nyEvent: EventDTO): Event {
         EventValidator.validate(nyEvent, LocalDateTime.now())
-        logger.info("fikk forespørsel om å lage nye events")
 
         val event = Event(
             title = nyEvent.title,
@@ -49,6 +52,9 @@ class EventController(private val eventRepository: EventRepository) {
             participantLimit = nyEvent.participantLimit,
             signupDeadline = nyEvent.signupDeadline
         )
-        return eventRepository.save(event)
+        val saved = eventRepository.save(event)
+        logger.info("Saved event: {}", saved)
+
+        return saved
     }
 }
