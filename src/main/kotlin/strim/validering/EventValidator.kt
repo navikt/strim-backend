@@ -10,6 +10,8 @@ object EventValidator {
             validateStartTime(startTime, now)
             validateEndTime(startTime, endTime)
             validateSignupDeadline(signupDeadline, startTime)
+            validateTitle(title)
+            validatebeskrivelse(description)
         }
     }
 
@@ -29,6 +31,22 @@ object EventValidator {
         if (signupDeadline != null && signupDeadline.isAfter(startTime)) {
             throw ValidationException(
                 "Påmeldingsfrist kan ikke være etter start tid (Påmeldingsfrist: $signupDeadline, start tid: $startTime)"
+            )
+        }
+    }
+
+    private fun validateTitle(title: String) {
+        if (title.isBlank()) {
+            throw ValidationException(
+                "Titel må være fylt ut"
+            )
+        }
+    }
+
+    private fun validatebeskrivelse(description: String) {
+        if (description.isBlank()) {
+            throw ValidationException(
+                "beskrivelse må være fylt ut"
             )
         }
     }
