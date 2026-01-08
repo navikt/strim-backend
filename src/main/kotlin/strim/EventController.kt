@@ -70,4 +70,12 @@ class EventController(private val eventRepository: EventRepository) {
 
         return saved
     }
+
+    @GetMapping("/next")
+    fun getNextEvent(): Event? {
+        val now = LocalDateTime.now()
+        val next = eventRepository.findFirstByEndTimeAfterOrderByStartTimeAsc(now)
+        logger.info("Fetched next event: {}", next?.id)
+        return next
+    }
 }
