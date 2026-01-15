@@ -1,0 +1,2 @@
+ALTER TABLE EVENTS
+    ADD COLUMN thumbnail_path TEXT;

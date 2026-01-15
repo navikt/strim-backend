@@ -11,5 +11,6 @@ data class EventDTO(
     val location: String,
     val isPublic: Boolean,
     val participantLimit: Int,
-    val signupDeadline: LocalDateTime?
+    val signupDeadline: LocalDateTime?,
+    val thumbnailPath: String?
 )

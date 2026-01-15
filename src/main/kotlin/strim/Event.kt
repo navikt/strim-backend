@@ -39,5 +39,9 @@ data class Event(
     var participantLimit: Int,
 
     @Column(name = "signup_deadline")
-    var signupDeadline: LocalDateTime? = null
+    var signupDeadline: LocalDateTime? = null,
+
+    @Column(name = "thumbnail_path")
+    var thumbnailPath: String? = null
+
 )

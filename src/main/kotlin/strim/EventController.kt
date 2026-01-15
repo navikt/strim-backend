@@ -63,7 +63,8 @@ class EventController(private val eventRepository: EventRepository) {
             location = nyEvent.location,
             isPublic = nyEvent.isPublic,
             participantLimit = nyEvent.participantLimit,
-            signupDeadline = nyEvent.signupDeadline
+            signupDeadline = nyEvent.signupDeadline,
+            thumbnailPath = nyEvent.thumbnailPath
         )
         val saved = eventRepository.save(event)
         logger.info("Saved event: {}", saved)
