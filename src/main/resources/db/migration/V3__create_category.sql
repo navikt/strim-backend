@@ -1,0 +1,5 @@
+CREATE TABLE category
+(
+    id   SERIAL PRIMARY KEY,
+    name VARCHAR(25) UNIQUE NOT NULL
+);

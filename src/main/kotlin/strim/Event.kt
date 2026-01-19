@@ -4,6 +4,8 @@ import jakarta.persistence.*
 import org.hibernate.annotations.UuidGenerator
 import java.time.LocalDateTime
 import java.util.UUID
+import strim.categories.Category
+
 
 @Entity
 @Table(name = "events", schema = "public")
@@ -42,6 +44,13 @@ data class Event(
     var signupDeadline: LocalDateTime? = null,
 
     @Column(name = "thumbnail_path")
-    var thumbnailPath: String? = null
+    var thumbnailPath: String? = null,
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "event_has_category",
+        joinColumns = [JoinColumn(name = "event_id")],
+        inverseJoinColumns = [JoinColumn(name = "category_id")]
+    )
+    var categories: MutableSet<Category> = mutableSetOf()
 )

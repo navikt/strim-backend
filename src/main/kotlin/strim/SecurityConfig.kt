@@ -15,6 +15,7 @@ class SecurityConfig {
                 it.requestMatchers("/internal/actuator/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/events/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/events/create").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/categories").permitAll()
                     .requestMatchers("/internal/**").permitAll()
                     .anyRequest().denyAll()
             }

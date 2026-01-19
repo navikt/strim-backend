@@ -12,5 +12,7 @@ data class EventDTO(
     val isPublic: Boolean,
     val participantLimit: Int,
     val signupDeadline: LocalDateTime?,
-    val thumbnailPath: String?
+    val thumbnailPath: String?,
+    val categoryIds: List<Int> = emptyList(),
+    val categoryNames: List<String> = emptyList()
 )
