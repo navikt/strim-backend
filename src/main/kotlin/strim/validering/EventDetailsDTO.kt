@@ -1,8 +1,15 @@
-package strim
+package strim.validering
 
 import java.time.LocalDateTime
+import java.util.UUID
 
-data class EventDTO(
+data class ParticipantDTO(
+    val name: String,
+    val email: String,
+)
+
+data class EventDetailsDTO(
+    val id: UUID,
     val title: String,
     val description: String,
     val videoUrl: String?,
@@ -15,4 +22,5 @@ data class EventDTO(
     val thumbnailPath: String?,
     val categoryIds: List<Int> = emptyList(),
     val categoryNames: List<String> = emptyList(),
+    val participants: List<ParticipantDTO> = emptyList(),
 )
