@@ -12,13 +12,22 @@ class SecurityConfig {
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf { it.disable() }
             .authorizeHttpRequests {
-                it.requestMatchers("/internal/actuator/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/events/**").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/events/create").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/categories").permitAll()
+                it
+                    .requestMatchers("/internal/actuator/**").permitAll()
                     .requestMatchers("/internal/**").permitAll()
+
+                    .requestMatchers(HttpMethod.GET, "/events/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/categories").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/me").permitAll()
+
+                    .requestMatchers(HttpMethod.POST, "/events/create").permitAll()
+
+                    .requestMatchers(HttpMethod.POST, "/events/*/join").permitAll()
+                    .requestMatchers(HttpMethod.DELETE, "/events/*/join").permitAll()
+
                     .anyRequest().denyAll()
             }
+
         return http.build()
     }
 }
