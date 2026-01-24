@@ -2,31 +2,33 @@ package strim
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
-class SecurityConfig {
+@Profile("!local")
+class SecurityConfigProd {
+
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
-        http.csrf { it.disable() }
+        http
+            .csrf { it.disable() }
             .authorizeHttpRequests {
-                it
-                    .requestMatchers("/internal/actuator/**").permitAll()
-                    .requestMatchers("/internal/**").permitAll()
+                it.requestMatchers("/internal/**").permitAll()
 
-                    .requestMatchers(HttpMethod.GET, "/events/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/categories").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/me").permitAll()
+                it.requestMatchers(HttpMethod.GET, "/events/**").permitAll()
+                it.requestMatchers(HttpMethod.GET, "/categories").permitAll()
 
-                    .requestMatchers(HttpMethod.POST, "/events/create").permitAll()
+                it.requestMatchers(HttpMethod.POST, "/events/*/join").authenticated()
+                it.requestMatchers(HttpMethod.DELETE, "/events/*/join").authenticated()
 
-                    .requestMatchers(HttpMethod.POST, "/events/*/join").permitAll()
-                    .requestMatchers(HttpMethod.DELETE, "/events/*/join").permitAll()
+                it.requestMatchers(HttpMethod.POST, "/events/create").authenticated()
 
-                    .anyRequest().denyAll()
+                it.anyRequest().denyAll()
             }
+            .oauth2ResourceServer { it.jwt { } }
 
         return http.build()
     }
