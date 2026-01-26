@@ -10,7 +10,11 @@ spring:
       idle-timeout: 600000
       connection-test-query: SELECT 1
       maximum-pool-size: ${DB_POOLSIZE:5}
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://login.microsoftonline.com/<your-tenant>/v2.0
   flyway:
     enabled: true
     locations:
