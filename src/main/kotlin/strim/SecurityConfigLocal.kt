@@ -21,9 +21,12 @@ class SecurityConfigLocal {
                     .requestMatchers(HttpMethod.GET, "/events/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/categories").permitAll()
                     .requestMatchers(HttpMethod.GET, "/me").permitAll()
+
                     .requestMatchers(HttpMethod.POST, "/events/create").permitAll()
                     .requestMatchers(HttpMethod.POST, "/events/*/join").permitAll()
                     .requestMatchers(HttpMethod.DELETE, "/events/*/join").permitAll()
+
+                    .requestMatchers(HttpMethod.PATCH, "/events/*").permitAll()
                     .anyRequest().permitAll()
             }
 

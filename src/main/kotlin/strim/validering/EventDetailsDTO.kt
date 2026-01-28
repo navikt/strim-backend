@@ -23,4 +23,6 @@ data class EventDetailsDTO(
     val categoryIds: List<Int> = emptyList(),
     val categoryNames: List<String> = emptyList(),
     val participants: List<ParticipantDTO> = emptyList(),
-)
+    val createdByName: String,
+    val createdByEmail: String,
+    )

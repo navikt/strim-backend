@@ -2,6 +2,7 @@ package strim
 
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.transaction.annotation.Transactional
@@ -52,7 +53,6 @@ class EventController(
     @GetMapping("/{id}")
     fun getEventById(@PathVariable id: UUID): Event {
         logger.info("fikk forespørsel om å hente event med id {}", id)
-
         return eventRepository.findById(id)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found") }
     }
@@ -124,8 +124,15 @@ class EventController(
 
     @PostMapping("/create")
     @Transactional
-    fun saveEvent(@RequestBody nyEvent: EventDTO): Event {
+    fun saveEvent(
+        @RequestBody nyEvent: EventDTO,
+        @AuthenticationPrincipal jwt: Jwt?,
+    ): Event {
         EventValidator.validate(nyEvent, LocalDateTime.now())
+
+        val createdByEmail = jwt?.let(::jwtEmail) ?: "test@localhost"
+        val createdByName = jwt?.let(::jwtName) ?: "Test User"
+        val createdById = jwt?.subject ?: createdByEmail
 
         val event = Event(
             title = nyEvent.title,
@@ -137,7 +144,10 @@ class EventController(
             isPublic = nyEvent.isPublic,
             participantLimit = nyEvent.participantLimit,
             signupDeadline = nyEvent.signupDeadline,
-            thumbnailPath = nyEvent.thumbnailPath
+            thumbnailPath = nyEvent.thumbnailPath,
+            createdById = createdById,
+            createdByName = createdByName,
+            createdByEmail = createdByEmail,
         )
 
         if (nyEvent.categoryIds.isNotEmpty()) {
@@ -167,6 +177,108 @@ class EventController(
         val saved = eventRepository.save(event)
         logger.info("Saved event: {}", saved)
         return saved
+    }
+
+    /**
+     * NOTE:
+     * - We intentionally do NOT accept createdByName/createdByEmail/createdById in this DTO.
+     * - Owner fields are read-only after creation.
+     */
+    data class UpdateEventDTO(
+        val title: String? = null,
+        val description: String? = null,
+        val videoUrl: String? = null,
+        val thumbnailPath: String? = null,
+        val startTime: LocalDateTime? = null,
+        val endTime: LocalDateTime? = null,
+        val location: String? = null,
+        val isPublic: Boolean? = null,
+        val participantLimit: Int? = null,
+        val signupDeadline: LocalDateTime? = null,
+        val categoryIds: List<Long>? = null,
+        val categoryNames: List<String>? = null,
+    )
+
+    @PatchMapping("/{id}", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @Transactional
+    fun updateEvent(
+        @PathVariable id: UUID,
+        @RequestBody body: UpdateEventDTO,
+        @AuthenticationPrincipal jwt: Jwt?, // works locally too
+    ): EventDetailsDTO {
+        val event = eventRepository.findById(id)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found") }
+
+        val callerEmail = (jwt?.let(::jwtEmail) ?: "test@localhost").lowercase()
+        val ownerEmail = (event.createdByEmail ?: "").lowercase()
+
+        if (ownerEmail.isBlank() || callerEmail != ownerEmail) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "Only owner can edit this event")
+        }
+
+        body.title?.let { event.title = it.trim() }
+        body.description?.let { event.description = it }
+        body.videoUrl?.let { event.videoUrl = it }
+        body.thumbnailPath?.let { event.thumbnailPath = it }
+        body.location?.let { event.location = it.trim() }
+        body.isPublic?.let { event.isPublic = it }
+        body.participantLimit?.let { event.participantLimit = it }
+        body.startTime?.let { event.startTime = it }
+        body.endTime?.let { event.endTime = it }
+        body.signupDeadline?.let { event.signupDeadline = it }
+
+        if (body.categoryIds != null || body.categoryNames != null) {
+            event.categories.clear()
+
+            body.categoryIds
+                ?.filter { it > 0 }
+                ?.distinct()
+                ?.takeIf { it.isNotEmpty() }
+                ?.let { ids ->
+                    val byIds = categoryRepository.findAllById(ids.map { it.toInt() })
+                    event.categories.addAll(byIds)
+                }
+
+            val cleanedNames = (body.categoryNames ?: emptyList())
+                .map { it.trim() }
+                .filter { it.isNotBlank() }
+                .distinctBy { it.lowercase() }
+
+            if (cleanedNames.isNotEmpty()) {
+                val existing = categoryRepository.findByNameIgnoreCaseIn(cleanedNames)
+                val existingNames = existing.map { it.name.lowercase() }.toSet()
+
+                val missing = cleanedNames
+                    .filter { it.lowercase() !in existingNames }
+                    .map { Category(name = it) }
+
+                val created = categoryRepository.saveAll(missing)
+
+                event.categories.addAll(existing)
+                event.categories.addAll(created)
+            }
+        }
+
+        EventValidator.validate(
+            EventDTO(
+                title = event.title,
+                description = event.description,
+                videoUrl = event.videoUrl,
+                thumbnailPath = event.thumbnailPath,
+                startTime = event.startTime,
+                endTime = event.endTime,
+                location = event.location,
+                isPublic = event.isPublic,
+                participantLimit = event.participantLimit,
+                signupDeadline = event.signupDeadline,
+                categoryIds = event.categories.map { it.id },
+                categoryNames = event.categories.map { it.name },
+            ),
+            LocalDateTime.now()
+        )
+
+        val saved = eventRepository.save(event)
+        return toDetailsDto(saved)
     }
 
     @GetMapping("/next")
@@ -218,6 +330,8 @@ class EventController(
             categoryIds = event.categories.mapNotNull { it.id },
             categoryNames = event.categories.map { it.name },
             participants = participants.map { ParticipantDTO(it.name, it.email) },
+            createdByName = event.createdByName,
+            createdByEmail = event.createdByEmail,
         )
     }
 

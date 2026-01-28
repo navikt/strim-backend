@@ -46,6 +46,16 @@ data class Event(
     @Column(name = "thumbnail_path")
     var thumbnailPath: String? = null,
 
+    @Column(name = "created_by_id", nullable = false)
+    var createdById: String,
+
+    @Column(name = "created_by_name", nullable = false)
+    var createdByName: String,
+
+    @Column(name = "created_by_email", nullable = false)
+    var createdByEmail: String,
+
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "event_has_category",

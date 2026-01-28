@@ -26,6 +26,8 @@ class SecurityConfigProd {
 
                 it.requestMatchers(HttpMethod.POST, "/events/create").authenticated()
 
+                it.requestMatchers(HttpMethod.PATCH, "/events/*").authenticated()
+
                 it.anyRequest().denyAll()
             }
             .oauth2ResourceServer { it.jwt { } }
