@@ -10,3 +10,4 @@ interface EventParticipantRepository : JpaRepository<EventParticipant, UUID> {
     fun deleteByEventIdAndEmail(eventId: UUID, email: String): Long
     fun countByEventId(eventId: UUID): Long
 }
+
