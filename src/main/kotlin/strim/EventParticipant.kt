@@ -30,4 +30,7 @@ class EventParticipant(
 
     @Column(nullable = false)
     var name: String,
+
+    @Column(name = "calendar_event_id")
+    var calendarEventId: String? = null
 )

@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
+import strim.calendar.CalendarInviteService
 import strim.categories.Category
 import strim.categories.CategoryRepository
 import strim.event.EventParticipant
@@ -23,6 +24,7 @@ class EventController(
     private val eventRepository: EventRepository,
     private val categoryRepository: CategoryRepository,
     private val participantRepository: EventParticipantRepository,
+    private val calendarInviteService: CalendarInviteService,
 ) {
     private val logger = LoggerFactory.getLogger(EventController::class.java)
 
@@ -122,6 +124,32 @@ class EventController(
         return toDetailsDto(event)
     }
 
+    @PostMapping("/{id}/calendar-invite")
+    @Transactional
+    fun sendCalendarInvite(
+        @PathVariable id: UUID,
+        @AuthenticationPrincipal jwt: Jwt?,
+    ) {
+        val email = jwt?.let(::jwtEmail) ?: "test@localhost"
+        val name = jwt?.let(::jwtName) ?: "Test User"
+
+        eventRepository.findById(id)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found") }
+
+        if (!participantRepository.existsByEventIdAndEmail(id, email)) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "You must join the event before adding it to your calendar")
+        }
+
+        try {
+            calendarInviteService.sendCalendarInvite(eventId = id, userEmail = email, userName = name)
+        } catch (e: ResponseStatusException) {
+            throw e
+        } catch (e: Exception) {
+            logger.error("Failed to send calendar invite for event {} to {}", id, email, e)
+            throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to send calendar invite")
+        }
+    }
+
     @PostMapping("/create")
     @Transactional
     fun saveEvent(
@@ -179,11 +207,6 @@ class EventController(
         return saved
     }
 
-    /**
-     * NOTE:
-     * - We intentionally do NOT accept createdByName/createdByEmail/createdById in this DTO.
-     * - Owner fields are read-only after creation.
-     */
     data class UpdateEventDTO(
         val title: String? = null,
         val description: String? = null,
@@ -204,7 +227,7 @@ class EventController(
     fun updateEvent(
         @PathVariable id: UUID,
         @RequestBody body: UpdateEventDTO,
-        @AuthenticationPrincipal jwt: Jwt?, // works locally too
+        @AuthenticationPrincipal jwt: Jwt?,
     ): EventDetailsDTO {
         val event = eventRepository.findById(id)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found") }
