@@ -29,6 +29,7 @@ class SecurityConfigProd {
                 it.requestMatchers(HttpMethod.PATCH, "/events/*").authenticated()
 
                 it.anyRequest().denyAll()
+
             }
             .oauth2ResourceServer { it.jwt { } }
 
