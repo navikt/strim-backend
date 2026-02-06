@@ -1,3 +1,4 @@
+
 package strim.calendar
 
 import com.microsoft.aad.msal4j.ClientCredentialFactory
@@ -40,7 +41,12 @@ class AzureCloudClient(
 
         graphClient =
             GraphServiceClient.builder()
-                .authenticationProvider { CompletableFuture.completedFuture(azureToken?.accessToken) }
+                .authenticationProvider { _ ->
+                    CompletableFuture.supplyAsync {
+                        refreshTokenIfNeeded()
+                        azureToken?.accessToken ?: throw RuntimeException("Failed to acquire access token")
+                    }
+                }
                 .buildClient()
     }
 
@@ -84,10 +90,19 @@ class AzureCloudClient(
         }
     }
 
+    private fun ensureUserExists() {
+        if (applicationEmailAddress.isBlank()) throw IllegalStateException("Missing application email address")
+        try {
+            graphClient.users(applicationEmailAddress).buildRequest().get()
+        } catch (e: Exception) {
+            throw RuntimeException("Target user '$applicationEmailAddress' not found or not available for calendar operations", e)
+        }
+    }
+
     override fun createEvent(event: Event, participant: Participant): String {
         require(applicationEmailAddress.isNotBlank()) { "Missing application email address" }
-        // refreshTokenIfNeeded() is now guaranteed by the auth provider too, but keeping it is fine.
-        refreshTokenIfNeeded()
+
+        ensureUserExists()
 
         val calendarEvent = buildCalendarEvent(event, participant)
 
@@ -99,6 +114,9 @@ class AzureCloudClient(
                 .buildRequest()
                 .post(calendarEvent)
                 .id ?: throw RuntimeException("Graph returned null id")
+        } catch (e: com.microsoft.graph.http.GraphServiceException) {
+            val code = e.serviceError?.code ?: "unknown"
+            throw RuntimeException("Failed to create calendar event (Graph error: $code)", e)
         } catch (e: Exception) {
             throw RuntimeException("Failed to create calendar event", e)
         }
@@ -106,7 +124,8 @@ class AzureCloudClient(
 
     override fun updateEvent(calendarEventId: String, event: Event, participant: Participant) {
         require(applicationEmailAddress.isNotBlank()) { "Missing application email address" }
-        refreshTokenIfNeeded()
+
+        ensureUserExists()
 
         val calendarEvent = buildCalendarEvent(event, participant).apply { id = calendarEventId }
 
@@ -117,6 +136,9 @@ class AzureCloudClient(
                 .events(calendarEventId)
                 .buildRequest()
                 .patch(calendarEvent)
+        } catch (e: com.microsoft.graph.http.GraphServiceException) {
+            val code = e.serviceError?.code ?: "unknown"
+            throw RuntimeException("Failed to update calendar event (Graph error: $code)", e)
         } catch (e: Exception) {
             throw RuntimeException("Failed to update calendar event", e)
         }
@@ -124,7 +146,8 @@ class AzureCloudClient(
 
     override fun deleteEvent(calendarEventId: String) {
         require(applicationEmailAddress.isNotBlank()) { "Missing application email address" }
-        refreshTokenIfNeeded()
+
+        ensureUserExists()
 
         try {
             graphClient
@@ -133,6 +156,9 @@ class AzureCloudClient(
                 .events(calendarEventId)
                 .buildRequest()
                 .delete()
+        } catch (e: com.microsoft.graph.http.GraphServiceException) {
+            val code = e.serviceError?.code ?: "unknown"
+            throw RuntimeException("Failed to delete calendar event (Graph error: $code)", e)
         } catch (e: Exception) {
             throw RuntimeException("Failed to delete calendar event", e)
         }
