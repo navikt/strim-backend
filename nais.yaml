@@ -14,10 +14,15 @@ spec:
       rules:
         - application: strim-frontend
   port: 8080
+  env:
+    - name: STRIM_EMAIL_ADDRESS
+      value: "strim@nav.no"
+
+  envFrom:
+    - secret: strim-backend-graph
   gcp:
     sqlInstances:
       - type: POSTGRES_17
-        # TODO: Migrere over til større database, micro er ikke tilstrekkelig
         tier: db-f1-micro
         databases:
           - name: strim

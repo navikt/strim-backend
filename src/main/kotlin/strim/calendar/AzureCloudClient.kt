@@ -40,7 +40,12 @@ class AzureCloudClient(
 
         graphClient =
             GraphServiceClient.builder()
-                .authenticationProvider { CompletableFuture.completedFuture(azureToken?.accessToken) }
+                .authenticationProvider {
+                    refreshTokenIfNeeded()
+                    val token = azureToken?.accessToken
+                        ?: throw IllegalStateException("Azure token is null after refreshTokenIfNeeded()")
+                    CompletableFuture.completedFuture(token)
+                }
                 .buildClient()
     }
 
@@ -86,6 +91,7 @@ class AzureCloudClient(
 
     override fun createEvent(event: Event, participant: Participant): String {
         require(applicationEmailAddress.isNotBlank()) { "Missing application email address" }
+        // refreshTokenIfNeeded() is now guaranteed by the auth provider too, but keeping it is fine.
         refreshTokenIfNeeded()
 
         val calendarEvent = buildCalendarEvent(event, participant)
