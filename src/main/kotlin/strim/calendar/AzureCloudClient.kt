@@ -40,12 +40,7 @@ class AzureCloudClient(
 
         graphClient =
             GraphServiceClient.builder()
-                .authenticationProvider {
-                    refreshTokenIfNeeded()
-                    val token = azureToken?.accessToken
-                        ?: throw IllegalStateException("Azure token is null after refreshTokenIfNeeded()")
-                    CompletableFuture.completedFuture(token)
-                }
+                .authenticationProvider { CompletableFuture.completedFuture(azureToken?.accessToken) }
                 .buildClient()
     }
 
