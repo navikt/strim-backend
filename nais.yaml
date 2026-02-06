@@ -17,9 +17,6 @@ spec:
   env:
     - name: STRIM_EMAIL_ADDRESS
       value: "strim@nav.no"
-
-  envFrom:
-    - secret: strim-backend-graph
   gcp:
     sqlInstances:
       - type: POSTGRES_17
