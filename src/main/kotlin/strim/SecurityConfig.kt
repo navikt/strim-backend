@@ -24,7 +24,7 @@ class SecurityConfigProd {
                 it.requestMatchers(HttpMethod.POST, "/events/*/join").authenticated()
                 it.requestMatchers(HttpMethod.DELETE, "/events/*/join").authenticated()
 
-                it.requestMatchers(HttpMethod.POST, "/events/*/calendar-invite").authenticated()
+                it.requestMatchers(HttpMethod.POST, "/events/**/calendar-invite").authenticated()
 
                 it.requestMatchers(HttpMethod.POST, "/events/create").authenticated()
 
