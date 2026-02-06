@@ -16,7 +16,7 @@ spec:
   port: 8080
   env:
     - name: STRIM_EMAIL_ADDRESS
-      value: "strim@nav.no"
+      value: "ikkesvar.strim@nav.no"
   gcp:
     sqlInstances:
       - type: POSTGRES_17
