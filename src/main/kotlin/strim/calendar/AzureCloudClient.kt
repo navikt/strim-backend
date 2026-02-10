@@ -4,6 +4,7 @@ package strim.calendar
 import com.microsoft.aad.msal4j.ClientCredentialFactory
 import com.microsoft.aad.msal4j.ClientCredentialParameters
 import com.microsoft.aad.msal4j.ConfidentialClientApplication
+import com.microsoft.graph.http.GraphServiceException
 import com.microsoft.graph.models.Attendee
 import com.microsoft.graph.models.BodyType
 import com.microsoft.graph.models.DateTimeTimeZone
@@ -91,13 +92,40 @@ class AzureCloudClient(
     }
 
     private fun ensureUserExists() {
-        if (applicationEmailAddress.isBlank()) throw IllegalStateException("Missing application email address")
         try {
-            graphClient.users(applicationEmailAddress).buildRequest().get()
-        } catch (e: Exception) {
-            throw RuntimeException("Target user '$applicationEmailAddress' not found or not available for calendar operations", e)
+            graphClient
+                .users(applicationEmailAddress)
+                .buildRequest()
+                .get()
+        } catch (e: GraphServiceException) {
+            val code = e.serviceError?.code ?: "unknown"
+            val msg = e.serviceError?.message ?: e.message ?: "unknown"
+
+            when (code) {
+                "Authorization_RequestDenied" -> {
+                    throw RuntimeException(
+                        "Graph denied access to read user '$applicationEmailAddress'. " +
+                                "Fix Azure app permissions/admin consent (need at least User.Read.All if you keep this check). " +
+                                "Graph: $code $msg",
+                        e
+                    )
+                }
+                "Request_ResourceNotFound", "ErrorInvalidUser" -> {
+                    throw RuntimeException(
+                        "Mailbox/user '$applicationEmailAddress' not found in tenant or not mailbox-enabled. Graph: $code $msg",
+                        e
+                    )
+                }
+                else -> {
+                    throw RuntimeException(
+                        "Failed to verify mailbox user '$applicationEmailAddress'. Graph: $code $msg",
+                        e
+                    )
+                }
+            }
         }
     }
+
 
     override fun createEvent(event: Event, participant: Participant): String {
         require(applicationEmailAddress.isNotBlank()) { "Missing application email address" }
@@ -114,7 +142,7 @@ class AzureCloudClient(
                 .buildRequest()
                 .post(calendarEvent)
                 .id ?: throw RuntimeException("Graph returned null id")
-        } catch (e: com.microsoft.graph.http.GraphServiceException) {
+        } catch (e: GraphServiceException) {
             val code = e.serviceError?.code ?: "unknown"
             throw RuntimeException("Failed to create calendar event (Graph error: $code)", e)
         } catch (e: Exception) {
@@ -136,7 +164,7 @@ class AzureCloudClient(
                 .events(calendarEventId)
                 .buildRequest()
                 .patch(calendarEvent)
-        } catch (e: com.microsoft.graph.http.GraphServiceException) {
+        } catch (e: GraphServiceException) {
             val code = e.serviceError?.code ?: "unknown"
             throw RuntimeException("Failed to update calendar event (Graph error: $code)", e)
         } catch (e: Exception) {
@@ -156,7 +184,7 @@ class AzureCloudClient(
                 .events(calendarEventId)
                 .buildRequest()
                 .delete()
-        } catch (e: com.microsoft.graph.http.GraphServiceException) {
+        } catch (e: GraphServiceException) {
             val code = e.serviceError?.code ?: "unknown"
             throw RuntimeException("Failed to delete calendar event (Graph error: $code)", e)
         } catch (e: Exception) {

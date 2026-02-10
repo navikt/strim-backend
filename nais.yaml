@@ -9,14 +9,18 @@ spec:
   ingresses:
     - https://strim-backend.intern.nav.no
   image: {{image}}
+
   accessPolicy:
     inbound:
       rules:
         - application: strim-frontend
+
   port: 8080
+
   env:
     - name: STRIM_EMAIL_ADDRESS
-      value: "ikkesvar.strim@nav.no"
+      value: "henrik.uran.nykmark@nav.no"
+
   gcp:
     sqlInstances:
       - type: POSTGRES_17
@@ -24,20 +28,24 @@ spec:
         databases:
           - name: strim
             envVarPrefix: DB
+
   azure:
     application:
       enabled: true
       allowAllUsers: true
+
   observability:
     autoInstrumentation:
       enabled: true
       runtime: java
+
   liveness:
     path: /internal/is_alive
     initialDelay: 10
     timeout: 5
     periodSeconds: 5
     failureThreshold: 30
+
   readiness:
     path: /internal/is_ready
     initialDelay: 10
