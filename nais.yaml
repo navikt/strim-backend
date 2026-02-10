@@ -19,7 +19,7 @@ spec:
 
   env:
     - name: STRIM_EMAIL_ADDRESS
-      value: "henrik.uran.nykmark@nav.no"
+      value: "ikkesvar.delta@nav.no"
 
   gcp:
     sqlInstances:
