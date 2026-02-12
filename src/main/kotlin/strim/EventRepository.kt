@@ -11,4 +11,6 @@ interface EventRepository : JpaRepository<Event, UUID> {
     fun findByEndTimeBeforeOrderByStartTimeDesc(now: LocalDateTime): List<Event>
 
     fun findFirstByEndTimeAfterOrderByStartTimeAsc(now: LocalDateTime): Event?
+
+    fun findByCreatedByEmailIgnoreCase(createdByEmail: String): List<Event>
 }

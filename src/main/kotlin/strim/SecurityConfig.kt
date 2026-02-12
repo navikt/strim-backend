@@ -18,6 +18,9 @@ class SecurityConfigProd {
             .authorizeHttpRequests {
                 it.requestMatchers("/internal/**").permitAll()
 
+                it.requestMatchers(HttpMethod.GET, "/events/mine").authenticated()
+                it.requestMatchers(HttpMethod.GET, "/events/owned").authenticated()
+
                 it.requestMatchers(HttpMethod.GET, "/events/**").permitAll()
                 it.requestMatchers(HttpMethod.GET, "/categories").permitAll()
 
@@ -25,13 +28,10 @@ class SecurityConfigProd {
                 it.requestMatchers(HttpMethod.DELETE, "/events/*/join").authenticated()
 
                 it.requestMatchers(HttpMethod.POST, "/events/*/calendar-invite").authenticated()
-
                 it.requestMatchers(HttpMethod.POST, "/events/create").authenticated()
-
                 it.requestMatchers(HttpMethod.PATCH, "/events/*").authenticated()
 
                 it.anyRequest().denyAll()
-
             }
             .oauth2ResourceServer { it.jwt { } }
 

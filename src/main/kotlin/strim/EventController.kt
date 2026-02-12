@@ -307,6 +307,52 @@ class EventController(
         return next
     }
 
+    data class EventListDTO(
+        val upcoming: List<EventDetailsDTO>,
+        val past: List<EventDetailsDTO>,
+    )
+
+    private fun splitUpcomingAndPast(events: List<Event>): EventListDTO {
+        val now = LocalDateTime.now()
+
+        val upcoming = events
+            .filter { it.endTime.isAfter(now) }
+            .sortedBy { it.startTime }
+            .map { toDetailsDto(it) }
+
+        val past = events
+            .filter { it.endTime.isBefore(now) }
+            .sortedByDescending { it.startTime }
+            .map { toDetailsDto(it) }
+
+        return EventListDTO(upcoming = upcoming, past = past)
+    }
+
+    @GetMapping("/mine")
+    fun getMyEvents(
+        @AuthenticationPrincipal jwt: Jwt?,
+    ): EventListDTO {
+        val email = jwt?.let(::jwtEmail) ?: "test@localhost"
+
+        val participants = participantRepository.findAllByEmail(email)
+        val events = participants.map { it.event }
+
+        val uniqueEvents = events.distinctBy { it.id }
+
+        return splitUpcomingAndPast(uniqueEvents)
+    }
+
+    @GetMapping("/owned")
+    fun getOwnedEvents(
+        @AuthenticationPrincipal jwt: Jwt?,
+    ): EventListDTO {
+        val email = jwt?.let(::jwtEmail) ?: "test@localhost"
+
+        val events = eventRepository.findByCreatedByEmailIgnoreCase(email)
+
+        return splitUpcomingAndPast(events)
+    }
+
     private fun claimAsString(jwt: Jwt, key: String): String? {
         val value = jwt.claims[key] ?: return null
         val s = value.toString().trim()

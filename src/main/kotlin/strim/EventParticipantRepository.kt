@@ -10,5 +10,5 @@ interface EventParticipantRepository : JpaRepository<EventParticipant, UUID> {
     fun deleteByEventIdAndEmail(eventId: UUID, email: String): Long
     fun countByEventId(eventId: UUID): Long
     fun findByEventIdAndEmail(eventId: UUID, email: String): EventParticipant?
+    fun findAllByEmail(email: String): List<EventParticipant>
 }
-

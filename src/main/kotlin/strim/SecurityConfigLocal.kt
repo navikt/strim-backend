@@ -27,6 +27,9 @@ class SecurityConfigLocal {
                     .requestMatchers(HttpMethod.DELETE, "/events/*/join").permitAll()
 
                     .requestMatchers(HttpMethod.POST, "/events/*/calendar-invite").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/events/mine").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/events/owned").permitAll()
+
 
                     .requestMatchers(HttpMethod.PATCH, "/events/*").permitAll()
                     .anyRequest().permitAll()
