@@ -132,16 +132,11 @@ class EventController(
     ) {
         val email = jwt?.let(::jwtEmail) ?: "test@localhost"
         val name = jwt?.let(::jwtName) ?: "Test User"
-
-        eventRepository.findById(id)
-            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found") }
-
-        if (!participantRepository.existsByEventIdAndEmail(id, email)) {
-            throw ResponseStatusException(HttpStatus.FORBIDDEN, "You must join the event before adding it to your calendar")
-        }
+        val event =
+            eventRepository.findById(id) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found")
 
         try {
-            calendarInviteService.sendCalendarInvite(eventId = id, userEmail = email, userName = name)
+            calendarInviteService.sendCalendarInvite(eventId = id, userEmail = email, userName = name, event = event.get())
         } catch (e: ResponseStatusException) {
             throw e
         } catch (e: Exception) {
@@ -350,7 +345,7 @@ class EventController(
             participantLimit = event.participantLimit,
             signupDeadline = event.signupDeadline,
             thumbnailPath = event.thumbnailPath,
-            categoryIds = event.categories.mapNotNull { it.id },
+            categoryIds = event.categories.map { it.id },
             categoryNames = event.categories.map { it.name },
             participants = participants.map { ParticipantDTO(it.name, it.email) },
             createdByName = event.createdByName,
