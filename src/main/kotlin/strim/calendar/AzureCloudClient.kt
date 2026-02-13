@@ -92,6 +92,11 @@ class AzureCloudClient(
     }
 
     private fun ensureUserExists() {
+        val skipCheck = System.getenv("SKIP_AZURE_USER_CHECK").orEmpty().lowercase() == "true"
+        if (skipCheck) {
+            return
+        }
+
         try {
             graphClient
                 .users(applicationEmailAddress)
@@ -105,14 +110,13 @@ class AzureCloudClient(
                 "Authorization_RequestDenied" -> {
                     throw RuntimeException(
                         "Graph denied access to read user '$applicationEmailAddress'. " +
-                                "Fix Azure app permissions/admin consent (need at least User.Read.All if you keep this check). " +
-                                "Graph: $code $msg",
+                                "Fix Azure app permissions/admin consent (need at least User.Read.All and Calendars.ReadWrite). Graph: $code $msg",
                         e
                     )
                 }
                 "Request_ResourceNotFound", "ErrorInvalidUser" -> {
                     throw RuntimeException(
-                        "Mailbox/user '$applicationEmailAddress' not found in tenant or not mailbox-enabled. Graph: $code $msg",
+                        "Mailbox/user '$applicationEmailAddress' not found or not mailbox-enabled. Graph: $code $msg",
                         e
                     )
                 }
