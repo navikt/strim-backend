@@ -227,10 +227,10 @@ class EventController(
         val event = eventRepository.findById(id)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found") }
 
-        val callerEmail = (jwt?.let(::jwtEmail) ?: "test@localhost").lowercase()
-        val ownerEmail = (event.createdByEmail ?: "").lowercase()
+        val callerId = jwt?.subject ?: "test@localhost"
+        val ownerId = event.createdById ?: ""
 
-        if (ownerEmail.isBlank() || callerEmail != ownerEmail) {
+        if (ownerId.isBlank() || callerId != ownerId) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "Only owner can edit this event")
         }
 
@@ -299,6 +299,26 @@ class EventController(
         return toDetailsDto(saved)
     }
 
+    @DeleteMapping("/{id}")
+    @Transactional
+    fun deleteEvent(
+        @PathVariable id: UUID,
+        @AuthenticationPrincipal jwt: Jwt?,
+    ) {
+        val event = eventRepository.findById(id)
+            .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found") }
+
+        val callerId = jwt?.subject ?: "test@localhost"
+        val ownerId = event.createdById ?: ""
+
+        if (ownerId.isBlank() || callerId != ownerId) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, "Only owner can delete this event")
+        }
+
+        participantRepository.deleteByEventId(id)
+        eventRepository.delete(event)
+    }
+
     @GetMapping("/next")
     fun getNextEvent(): Event? {
         val now = LocalDateTime.now()
@@ -333,12 +353,9 @@ class EventController(
         @AuthenticationPrincipal jwt: Jwt?,
     ): EventListDTO {
         val email = jwt?.let(::jwtEmail) ?: "test@localhost"
-
         val participants = participantRepository.findAllByEmail(email)
         val events = participants.map { it.event }
-
         val uniqueEvents = events.distinctBy { it.id }
-
         return splitUpcomingAndPast(uniqueEvents)
     }
 
@@ -347,9 +364,7 @@ class EventController(
         @AuthenticationPrincipal jwt: Jwt?,
     ): EventListDTO {
         val email = jwt?.let(::jwtEmail) ?: "test@localhost"
-
         val events = eventRepository.findByCreatedByEmailIgnoreCase(email)
-
         return splitUpcomingAndPast(events)
     }
 
