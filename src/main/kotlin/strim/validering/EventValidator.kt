@@ -5,15 +5,41 @@ import java.time.LocalDateTime
 
 object EventValidator {
 
-    fun validate(event: EventDTO, now: LocalDateTime = LocalDateTime.now()) {
+    fun validateCreate(event: EventDTO, now: LocalDateTime = LocalDateTime.now()) {
         with(event) {
             validateStartTime(startTime, now)
             validateEndTime(startTime, endTime)
             validateSignupDeadline(signupDeadline, startTime)
             validateTitle(title)
-            validatebeskrivelse(description)
+            validateBeskrivelse(description)
         }
     }
+
+    fun validateUpdate(
+        existing: EventDTO,
+        updated: EventDTO,
+        now: LocalDateTime = LocalDateTime.now()
+    ) {
+        val ongoing = !now.isBefore(existing.startTime) && now.isBefore(existing.endTime)
+
+        val startChanged = updated.startTime != existing.startTime
+        val endChanged = updated.endTime != existing.endTime
+
+        validateEndTime(updated.startTime, updated.endTime)
+        validateSignupDeadline(updated.signupDeadline, updated.startTime)
+        validateTitle(updated.title)
+        validateBeskrivelse(updated.description)
+
+        if (ongoing) {
+            if (startChanged || endChanged) {
+                throw ValidationException("Kan ikke endre dato/tid når møtet pågår")
+            }
+            return
+        }
+
+        validateStartTime(updated.startTime, now)
+    }
+
 
     private fun validateStartTime(startTime: LocalDateTime, now: LocalDateTime) {
         if (!startTime.isAfter(now)) {
@@ -22,8 +48,8 @@ object EventValidator {
     }
 
     private fun validateEndTime(startTime: LocalDateTime, endTime: LocalDateTime) {
-        if (endTime.isBefore(startTime)) {
-            throw ValidationException("slutt tid kan ikke være før start tid (start tis: $startTime, slutt tid: $endTime)")
+        if (!endTime.isAfter(startTime)) {
+            throw ValidationException("slutt tid må være etter start tid (start tid: $startTime, slutt tid: $endTime)")
         }
     }
 
@@ -37,17 +63,13 @@ object EventValidator {
 
     private fun validateTitle(title: String) {
         if (title.isBlank()) {
-            throw ValidationException(
-                "Titel må være fylt ut"
-            )
+            throw ValidationException("Titel må være fylt ut")
         }
     }
 
-    private fun validatebeskrivelse(description: String) {
+    private fun validateBeskrivelse(description: String) {
         if (description.isBlank()) {
-            throw ValidationException(
-                "beskrivelse må være fylt ut"
-            )
+            throw ValidationException("beskrivelse må være fylt ut")
         }
     }
 }

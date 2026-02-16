@@ -151,7 +151,7 @@ class EventController(
         @RequestBody nyEvent: EventDTO,
         @AuthenticationPrincipal jwt: Jwt?,
     ): Event {
-        EventValidator.validate(nyEvent, LocalDateTime.now())
+        EventValidator.validateCreate(nyEvent, LocalDateTime.now())
 
         val createdByEmail = jwt?.let(::jwtEmail) ?: "test@localhost"
         val createdByName = jwt?.let(::jwtName) ?: "Test User"
@@ -227,11 +227,33 @@ class EventController(
         val event = eventRepository.findById(id)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found") }
 
-        val callerId = jwt?.subject ?: "test@localhost"
-        val ownerId = event.createdById ?: ""
+        val callerEmail = (jwt?.let(::jwtEmail) ?: "test@localhost").lowercase()
+        val ownerEmail = (event.createdByEmail ?: "").lowercase()
 
-        if (ownerId.isBlank() || callerId != ownerId) {
+        if (ownerEmail.isBlank() || callerEmail != ownerEmail) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "Only owner can edit this event")
+        }
+
+        val now = LocalDateTime.now()
+        val isOngoing = !now.isBefore(event.startTime) && now.isBefore(event.endTime)
+
+        val existingDto = EventDTO(
+            title = event.title,
+            description = event.description,
+            videoUrl = event.videoUrl,
+            thumbnailPath = event.thumbnailPath,
+            startTime = event.startTime,
+            endTime = event.endTime,
+            location = event.location,
+            isPublic = event.isPublic,
+            participantLimit = event.participantLimit,
+            signupDeadline = event.signupDeadline,
+            categoryIds = event.categories.map { it.id },
+            categoryNames = event.categories.map { it.name },
+        )
+
+        if (isOngoing && (body.startTime != null || body.endTime != null)) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Kan ikke endre dato/tid når møtet pågår")
         }
 
         body.title?.let { event.title = it.trim() }
@@ -241,9 +263,12 @@ class EventController(
         body.location?.let { event.location = it.trim() }
         body.isPublic?.let { event.isPublic = it }
         body.participantLimit?.let { event.participantLimit = it }
-        body.startTime?.let { event.startTime = it }
-        body.endTime?.let { event.endTime = it }
         body.signupDeadline?.let { event.signupDeadline = it }
+
+        if (!isOngoing) {
+            body.startTime?.let { event.startTime = it }
+            body.endTime?.let { event.endTime = it }
+        }
 
         if (body.categoryIds != null || body.categoryNames != null) {
             event.categories.clear()
@@ -277,23 +302,25 @@ class EventController(
             }
         }
 
-        EventValidator.validate(
-            EventDTO(
-                title = event.title,
-                description = event.description,
-                videoUrl = event.videoUrl,
-                thumbnailPath = event.thumbnailPath,
-                startTime = event.startTime,
-                endTime = event.endTime,
-                location = event.location,
-                isPublic = event.isPublic,
-                participantLimit = event.participantLimit,
-                signupDeadline = event.signupDeadline,
-                categoryIds = event.categories.map { it.id },
-                categoryNames = event.categories.map { it.name },
-            ),
-            LocalDateTime.now()
+        val updatedDto = EventDTO(
+            title = event.title,
+            description = event.description,
+            videoUrl = event.videoUrl,
+            thumbnailPath = event.thumbnailPath,
+            startTime = event.startTime,
+            endTime = event.endTime,
+            location = event.location,
+            isPublic = event.isPublic,
+            participantLimit = event.participantLimit,
+            signupDeadline = event.signupDeadline,
+            categoryIds = event.categories.map { it.id },
+            categoryNames = event.categories.map { it.name },
         )
+
+        // Update-regler:
+        // - Før start: tid/dato kan endres, men startTime må være i fremtiden
+        // - Pågående: tid/dato kan ikke endres, men alt annet kan
+        EventValidator.validateUpdate(existingDto, updatedDto, now)
 
         val saved = eventRepository.save(event)
         return toDetailsDto(saved)
@@ -308,10 +335,10 @@ class EventController(
         val event = eventRepository.findById(id)
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found") }
 
-        val callerId = jwt?.subject ?: "test@localhost"
-        val ownerId = event.createdById ?: ""
+        val callerEmail = (jwt?.let(::jwtEmail) ?: "test@localhost").lowercase()
+        val ownerEmail = (event.createdByEmail ?: "").lowercase()
 
-        if (ownerId.isBlank() || callerId != ownerId) {
+        if (ownerEmail.isBlank() || callerEmail != ownerEmail) {
             throw ResponseStatusException(HttpStatus.FORBIDDEN, "Only owner can delete this event")
         }
 
@@ -353,9 +380,12 @@ class EventController(
         @AuthenticationPrincipal jwt: Jwt?,
     ): EventListDTO {
         val email = jwt?.let(::jwtEmail) ?: "test@localhost"
+
         val participants = participantRepository.findAllByEmail(email)
         val events = participants.map { it.event }
+
         val uniqueEvents = events.distinctBy { it.id }
+
         return splitUpcomingAndPast(uniqueEvents)
     }
 
@@ -364,7 +394,9 @@ class EventController(
         @AuthenticationPrincipal jwt: Jwt?,
     ): EventListDTO {
         val email = jwt?.let(::jwtEmail) ?: "test@localhost"
+
         val events = eventRepository.findByCreatedByEmailIgnoreCase(email)
+
         return splitUpcomingAndPast(events)
     }
 
