@@ -91,50 +91,8 @@ class AzureCloudClient(
         }
     }
 
-    private fun ensureUserExists() {
-        val skipCheck = System.getenv("SKIP_AZURE_USER_CHECK").orEmpty().lowercase() == "true"
-        if (skipCheck) {
-            return
-        }
-
-        try {
-            graphClient
-                .users(applicationEmailAddress)
-                .buildRequest()
-                .get()
-        } catch (e: GraphServiceException) {
-            val code = e.serviceError?.code ?: "unknown"
-            val msg = e.serviceError?.message ?: e.message ?: "unknown"
-
-            when (code) {
-                "Authorization_RequestDenied" -> {
-                    throw RuntimeException(
-                        "Graph denied access to read user '$applicationEmailAddress'. " +
-                                "Fix Azure app permissions/admin consent (need at least User.Read.All and Calendars.ReadWrite). Graph: $code $msg",
-                        e
-                    )
-                }
-                "Request_ResourceNotFound", "ErrorInvalidUser" -> {
-                    throw RuntimeException(
-                        "Mailbox/user '$applicationEmailAddress' not found or not mailbox-enabled. Graph: $code $msg",
-                        e
-                    )
-                }
-                else -> {
-                    throw RuntimeException(
-                        "Failed to verify mailbox user '$applicationEmailAddress'. Graph: $code $msg",
-                        e
-                    )
-                }
-            }
-        }
-    }
-
-
     override fun createEvent(event: Event, participant: Participant): String {
         require(applicationEmailAddress.isNotBlank()) { "Missing application email address" }
-
-        ensureUserExists()
 
         val calendarEvent = buildCalendarEvent(event, participant)
 
@@ -157,8 +115,6 @@ class AzureCloudClient(
     override fun updateEvent(calendarEventId: String, event: Event, participant: Participant) {
         require(applicationEmailAddress.isNotBlank()) { "Missing application email address" }
 
-        ensureUserExists()
-
         val calendarEvent = buildCalendarEvent(event, participant).apply { id = calendarEventId }
 
         try {
@@ -178,8 +134,6 @@ class AzureCloudClient(
 
     override fun deleteEvent(calendarEventId: String) {
         require(applicationEmailAddress.isNotBlank()) { "Missing application email address" }
-
-        ensureUserExists()
 
         try {
             graphClient
